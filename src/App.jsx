@@ -6,6 +6,9 @@ import Signup from './components/Signup';
 import MyProjects from './components/MyProjects';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './contexts/AuthContext';
+import TaskDetail from './components/TaskDetail.jsx'; // New Import
+import ProjectDetail from './components/ProjectDetail.jsx'; // **New Import**
+
 
 function App() {
   return (
@@ -30,6 +33,23 @@ function App() {
               </PrivateRoute>
             } 
           />
+          <Route
+            path="/project/:projectId"
+            element={
+              <PrivateRoute>
+                <ProjectDetail />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/tasks/:taskId"
+            element={
+              <PrivateRoute>
+                <TaskDetail /> {/* New Route */}
+              </PrivateRoute>
+            }
+          />
+
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Router>

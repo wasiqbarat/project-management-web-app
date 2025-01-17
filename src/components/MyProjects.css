@@ -1,198 +1,511 @@
-.my-projects {
-  padding: 2rem;
+/* src/styles/MyProjects.css */
+
+/* Reset some basic elements for consistency */
+.projects-page, .projects-header, .projects-grid, .project-card, .modal-overlay, .modal {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
 }
 
+/* Projects Header */
 .projects-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  padding: 20px;
+  background-color: #f0f4f8;
 }
 
 .projects-header h1 {
-  font-size: 1.5rem;
+  font-size: 2rem;
   color: #212529;
-  margin: 0;
 }
 
-.new-project-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: #228be6;
-  color: white;
+.add-project-btn {
+  background-color: #007bff; /* Blue */
+  color: #ffffff;
+  padding: 10px 20px;
   border: none;
   border-radius: 8px;
-  font-size: 0.875rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
 }
 
-.new-project-btn:hover {
-  background-color: #1c7ed6;
+.add-project-btn:hover {
+  background-color: #0056b3; /* Darker Blue */
 }
 
+/* Projects Grid */
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  gap: 20px;
+  padding: 20px;
 }
 
 .project-card {
-  background: white;
+  background-color: #ffffff;
   border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+}
+
+/* Project Header */
 .project-header {
   display: flex;
-  gap: 1rem;
   align-items: center;
+  gap: 15px;
 }
 
-.project-image {
+.project-avatar {
   width: 64px;
   height: 64px;
-  border-radius: 8px;
+  border-radius: 50%;
+  background-color: #dee2e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #212529;
+  overflow: hidden;
+}
+
+.project-avatar img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
+.project-avatar span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #6c757d; /* Dark Gray for fallback */
+  color: #ffffff;
+  font-weight: bold;
+}
+
 .project-info h3 {
-  margin: 0;
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   color: #212529;
+  margin-bottom: 5px;
 }
 
-.team-name {
-  margin: 0.25rem 0 0;
-  font-size: 0.875rem;
-  color: #868e96;
+.project-meta {
+  display: flex;
+  gap: 15px;
+  font-size: 0.9rem;
+  color: #6c757d;
 }
 
+.team-name, .progress {
+  display: block;
+}
+
+/* Project Progress */
 .project-progress {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.progress-info {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.875rem;
-  color: #495057;
+  margin-top: 15px;
 }
 
 .progress-bar {
-  height: 6px;
+  width: 100%;
+  height: 10px;
   background-color: #e9ecef;
-  border-radius: 3px;
+  border-radius: 5px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background-color: #228be6;
-  border-radius: 3px;
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, #007bff, #0056b3); /* Blue Gradient */
+  width: 0%;
+  transition: width 0.5s ease;
 }
 
-.project-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #495057;
-}
-
-.meta-item i {
-  color: #868e96;
-  width: 16px;
-}
-
-.project-team {
-  border-top: 1px solid #e9ecef;
-  padding-top: 1rem;
-}
-
-.project-team h4 {
-  margin: 0 0 0.75rem;
-  font-size: 0.875rem;
-  color: #495057;
-}
-
-.team-members {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.member-avatar {
-  width: 32px;
-  height: 32px;
-  background: #228be6;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
+/* Project Actions */
 .project-actions {
   display: flex;
-  gap: 1rem;
-  margin-top: auto;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-.action-btn {
+.view-tasks-btn, .edit-btn {
   flex: 1;
-  padding: 0.75rem;
-  border: 1px solid #e9ecef;
-  border-radius: 6px;
-  background: none;
-  color: #495057;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  padding: 10px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background-color 0.3s ease;
 }
 
-.action-btn:hover {
+/* Button Color Scheme: Blue and Red */
+.view-tasks-btn {
+  background-color: #007bff; /* Blue */
+  color: #ffffff;
+}
+
+.view-tasks-btn:hover {
+  background-color: #0056b3; /* Darker Blue */
+}
+
+.edit-btn {
+  background-color: #dc3545; /* Red */
+  color: #ffffff;
+}
+
+.edit-btn:hover {
+  background-color: #a71d2a; /* Darker Red */
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensures the modal is on top */
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Modal Container */
+.modal {
+  background-color: #ffffff;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto; /* Allows scrolling if content exceeds height */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  animation: slideIn 0.3s ease-in-out;
+  position: relative;
+  padding: 20px;
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #212529;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #868e96;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #212529;
+}
+
+/* Modal Body */
+.modal-body {
+  padding: 0 10px;
+}
+
+/* Tasks List */
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.task-item {
+  padding: 15px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.task-item:hover {
   background-color: #f8f9fa;
-  border-color: #dee2e6;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #212529;
+}
+
+.task-title.clickable {
+  cursor: pointer;
+  color: #007bff; /* Blue */
+  transition: color 0.2s;
+}
+
+.task-title.clickable:hover {
+  color: #0056b3; /* Darker Blue */
+}
+
+.task-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.task-description {
+  margin: 10px 0;
+  color: #495057;
+}
+
+.task-meta {
+  display: flex;
+  gap: 15px;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+/* No Tasks Message */
+.no-tasks {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 20px 0;
+}
+
+/* Loading and Error Messages */
 .loading, .error {
   text-align: center;
-  padding: 3rem;
-  color: #868e96;
+  padding: 20px 0;
+  color: #6c757d;
 }
 
 .error {
-  color: #e03131;
+  color: #dc3545; /* Red */
 }
 
+/* Add Project Modal Form */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #212529;
+}
+
+.form-group input {
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #007bff; /* Blue */
+  outline: none;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.view-tasks-btn, .edit-btn, .cancel-btn, .submit-btn {
+  /* Specific button styles are defined below */
+}
+
+/* Specific Button Styles */
+
+/* View Tasks Button - Blue */
+.view-tasks-btn {
+  background-color: #007bff; /* Blue */
+  color: #ffffff;
+}
+
+.view-tasks-btn:hover {
+  background-color: #0056b3; /* Darker Blue */
+}
+
+/* Edit Button - Red */
+.edit-btn {
+  background-color: #dc3545; /* Red */
+  color: #ffffff;
+}
+
+.edit-btn:hover {
+  background-color: #a71d2a; /* Darker Red */
+}
+
+/* Cancel Button - Red */
+.cancel-btn {
+  background-color: #dc3545; /* Red */
+  color: #ffffff;
+}
+
+.cancel-btn:hover {
+  background-color: #a71d2a; /* Darker Red */
+}
+
+/* Submit Button - Blue */
+.submit-btn {
+  background-color: #007bff; /* Blue */
+  color: #ffffff;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3; /* Darker Blue */
+}
+
+/* Error Message in Modal */
+.error-message {
+  background-color: #fdecea;
+  color: #dc3545;
+  padding: 10px 15px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animated {
+  animation: fadeIn 0.3s ease-in-out, slideIn 0.3s ease-in-out;
+}
+
+/* Responsive Adjustments */
 @media (max-width: 768px) {
-  .my-projects {
-    padding: 1rem;
+  .projects-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
-  
+
   .projects-grid {
     grid-template-columns: 1fr;
   }
-} 
+
+  .modal {
+    width: 95%;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .task-meta {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .projects-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .project-info h3 {
+    font-size: 1rem;
+  }
+
+  .task-title {
+    font-size: 1rem;
+  }
+
+  .task-meta {
+    font-size: 0.8rem;
+  }
+
+  .btn {
+    font-size: 0.75rem;
+    padding: 8px 16px;
+  }
+}
+
+/* Scrollbar Styling for Modal */
+.modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+
+.modal::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 4px;
+}
+
+.modal::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+.modal {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}

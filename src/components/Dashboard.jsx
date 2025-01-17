@@ -1,36 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
-import { fetchTodayTasks, fetchOverdueTasks, fetchAllTasks, fetchMyProjects, fetchColleagues } from '../services/workbenchService.js';
+import { fetchMyProjects, fetchColleagues, fetchUserProfile, fetchTodayTasks, fetchAllTasks } from '../services/workbenchService.js';
 import './Dashboard.css';
+import ProfileEdit from './ProfileEdit';
 
 function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [todayTasks, setTodayTasks] = useState([]);
-  const [overdueTasks, setOverdueTasks] = useState([]);
-  const [allTasks, setAllTasks] = useState([]);
   const [myProjects, setMyProjects] = useState([]);
   const [colleagues, setColleagues] = useState([]);
+  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [todayTasks, setTodayTasks] = useState([]);
+  const [allTasks, setAllTasks] = useState([]);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [todayTasksData, overdueTasksData, allTasksData, projectsData, colleaguesData] = await Promise.all([
-          fetchTodayTasks(),
-          fetchOverdueTasks(),
-          fetchAllTasks(),
+        const [projectsData, colleaguesData, profileData, todayTasksData, allTasksData] = await Promise.all([
           fetchMyProjects(),
-          fetchColleagues()
+          fetchColleagues(),
+          fetchUserProfile(),
+          fetchTodayTasks(),
+          fetchAllTasks()
         ]);
-        setTodayTasks(todayTasksData);
-        setOverdueTasks(overdueTasksData);
-        setAllTasks(allTasksData.slice(0, 10));
         setMyProjects(projectsData);
         setColleagues(colleaguesData);
+        setUserProfile(profileData);
+        setTodayTasks(todayTasksData);
+        setAllTasks(allTasksData);
       } catch (err) {
         console.error('Error loading data:', err);
         setError('Failed to load data');
@@ -68,32 +70,64 @@ function Dashboard() {
     }
   };
 
-  const isProjectAdmin = (projectAdminId) => {
-    return user?.id === projectAdminId;
+  const handleProfileUpdate = (updatedProfile) => {
+    setUserProfile(updatedProfile);
   };
 
   return (
     <div className="dashboard-container">
-      {/* Left Sidebar */}
       <aside className="sidebar">
         <div className="user-profile">
-          <div className="user-avatar">
-            {user?.username?.[0]?.toUpperCase() || 'U'}
-          </div>
-          <h3 className="user-name">{user?.username || 'User'}</h3>
-          <p className="user-role">Project Manager</p>
-          <div className="progress-container">
-            <div className="progress-label">
-              <span>Progress</span>
-              <span>75%</span>
-            </div>
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: '75%' }}></div>
-            </div>
-          </div>
+          {loading ? (
+            <div className="profile-loading">Loading profile...</div>
+          ) : error ? (
+            <div className="profile-error">{error}</div>
+          ) : userProfile && (
+            <>
+              <div 
+                className="user-avatar"
+                onClick={() => setIsEditingProfile(true)}
+                title="Click to edit profile"
+              >
+                {userProfile.username[0].toUpperCase()}
+              </div>
+              <div className="user-info">
+                <h3 className="user-name">{userProfile.username}</h3>
+                <p className="user-email">{userProfile.email}</p>
+                <div className="user-status">
+                  <span className={`status-indicator ${userProfile.is_active ? 'active' : 'inactive'}`}></span>
+                  {userProfile.is_active ? 'Active' : 'Inactive'}
+                </div>
+              </div>
+              <div className="user-meta">
+                <div className="meta-item">
+                  <span className="meta-label">Member since</span>
+                  <span className="meta-value">{formatDate(userProfile.created_at)}</span>
+                </div>
+                <div className="meta-item">
+                  <span className="meta-label">Last updated</span>
+                  <span className="meta-value">{formatDate(userProfile.updated_at)}</span>
+                </div>
+              </div>
+              <button 
+                className="edit-profile-btn"
+                onClick={() => setIsEditingProfile(true)}
+              >
+                <i className="fas fa-edit"></i>
+                Edit Profile
+              </button>
+            </>
+          )}
         </div>
 
-        {/* Navigation Menu */}
+        {isEditingProfile && (
+          <ProfileEdit
+            userProfile={userProfile}
+            onClose={() => setIsEditingProfile(false)}
+            onUpdate={handleProfileUpdate}
+          />
+        )}
+
         <nav className="sidebar-nav">
           <Link to="/dashboard" className="nav-item active">
             <i className="fas fa-home"></i>
@@ -103,103 +137,26 @@ function Dashboard() {
             <i className="fas fa-project-diagram"></i>
             My Projects
           </Link>
-          
-          {/* Tasks Section in Sidebar */}
-          <div className="sidebar-tasks">
-            <h3 className="sidebar-tasks-title">
-              <i className="fas fa-tasks"></i>
-              My Tasks
-            </h3>
-            {loading ? (
-              <div className="sidebar-loading">Loading...</div>
-            ) : error ? (
-              <div className="sidebar-error">{error}</div>
-            ) : (
-              <div className="sidebar-tasks-list">
-                {allTasks.map(task => (
-                  <div key={task.id} className="sidebar-task-item">
-                    <div className="task-title">
-                      <span className="status-dot" style={{ backgroundColor: getStatusColor(task.status) }}></span>
-                      {task.title}
-                    </div>
-                    <div className="task-brief">
-                      {task.description.length > 50 
-                        ? `${task.description.substring(0, 50)}...` 
-                        : task.description}
-                    </div>
-                  </div>
-                ))}
-                {allTasks.length === 0 && (
-                  <div className="no-tasks">No tasks available</div>
-                )}
-              </div>
-            )}
-          </div>
-
-          <button className="nav-item" onClick={handleLogout}>
-            <i className="fas fa-sign-out-alt"></i>
-            Logout
-          </button>
         </nav>
 
-        <button className="new-project-btn">
-          <i className="fas fa-plus"></i> New Project
-        </button>
-
-        {/* Colleagues Section */}
-        <div className="sidebar-colleagues">
-          <h3 className="sidebar-section-title">
-            <i className="fas fa-users"></i>
-            Colleagues
-          </h3>
-          {loading ? (
-            <div className="sidebar-loading">Loading colleagues...</div>
-          ) : error ? (
-            <div className="sidebar-error">{error}</div>
-          ) : (
-            <div className="colleagues-list">
-              {colleagues.map(team => (
-                <div key={team.team_id} className="team-section">
-                  <div className="team-header">
-                    <span className="team-name">{team.team_name}</span>
-                    <span className="member-count">{team.colleagues.length}</span>
-                  </div>
-                  <div className="team-members">
-                    {team.colleagues.map(colleague => (
-                      <div key={colleague.id} className="colleague-item">
-                        <div className="colleague-avatar">
-                          {colleague.username[0].toUpperCase()}
-                        </div>
-                        <div className="colleague-info">
-                          <span className="colleague-name">{colleague.username}</span>
-                          <span className="colleague-email">{colleague.email}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              {colleagues.length === 0 && (
-                <div className="no-colleagues">No colleagues found</div>
-              )}
-            </div>
-          )}
+        <div className="sidebar-footer">
+          <button className="logout-btn" onClick={handleLogout}>
+            <i className="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="main-content">
-        {/* Header */}
         <header className="content-header">
           <div className="search-bar">
-            <i className="fas fa-cog"></i>
+            <i className="fas fa-search"></i>
             <input
               type="text"
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <i className="fas fa-search"></i>
           </div>
           <div className="header-actions">
             <button className="icon-btn">
@@ -208,24 +165,9 @@ function Dashboard() {
             <button className="icon-btn">
               <i className="fas fa-comment"></i>
             </button>
-            <button className="icon-btn" onClick={handleLogout}>
-              <i className="fas fa-sign-out-alt"></i>
-            </button>
           </div>
         </header>
 
-        {/* Projects Section */}
-        <section className="projects-section">
-          <div className="section-header">
-            <div className="project-badge">
-              <span>3</span>
-              <h2>Personal Projects</h2>
-            </div>
-            <span className="status-badge">Active</span>
-          </div>
-        </section>
-
-        {/* Today's Tasks Section */}
         <section className="today-tasks-section">
           <h2>Today's Tasks</h2>
           {loading ? (
@@ -276,17 +218,16 @@ function Dashboard() {
           )}
         </section>
 
-        {/* Overdue Tasks Section */}
-        <section className="overdue-tasks-section">
-          <h2>Overdue Tasks</h2>
+        <section className="my-tasks-section">
+          <h2>My Tasks</h2>
           {loading ? (
-            <div className="loading">Loading overdue tasks...</div>
+            <div className="loading">Loading tasks...</div>
           ) : error ? (
             <div className="error">{error}</div>
           ) : (
             <div className="tasks-list">
-              {overdueTasks.map(task => (
-                <div key={task.id} className="task-card overdue">
+              {allTasks.map(task => (
+                <div key={task.id} className="task-card compact">
                   <div className="task-header">
                     <h3>{task.title}</h3>
                     <span 
@@ -296,99 +237,66 @@ function Dashboard() {
                       {task.status}
                     </span>
                   </div>
-                  <p className="task-description">{task.description}</p>
-                  <div className="task-footer">
-                    <div className="task-meta">
-                      <span className="due-date overdue">
-                        <i className="fas fa-exclamation-circle"></i>
-                        Due: {formatDate(task.due_date)}
-                      </span>
-                      <span className="priority">
-                        <i className="fas fa-flag"></i>
-                        Priority: {task.priority}
-                      </span>
-                    </div>
-                    <div className="task-progress">
-                      <div className="progress-bar">
-                        <div 
-                          className="progress-fill"
-                          style={{ width: `${task.progress_percentage}%` }}
-                        ></div>
-                      </div>
-                      <span>{task.progress_percentage}%</span>
-                    </div>
+                  <p className="task-description">
+                    {task.description.length > 100 
+                      ? `${task.description.substring(0, 100)}...` 
+                      : task.description}
+                  </p>
+                  <div className="task-meta">
+                    <span className="due-date">
+                      <i className="fas fa-calendar"></i>
+                      Due: {formatDate(task.due_date)}
+                    </span>
+                    <span className="priority">
+                      <i className="fas fa-flag"></i>
+                      Priority: {task.priority}
+                    </span>
                   </div>
                 </div>
               ))}
-              {overdueTasks.length === 0 && (
-                <div className="no-tasks">No overdue tasks</div>
+              {allTasks.length === 0 && (
+                <div className="no-tasks">No tasks available</div>
               )}
             </div>
           )}
         </section>
 
-        {/* Tasks Grid */}
-        <div className="tasks-grid">
-          {/* Pending Tasks */}
-          <div className="tasks-column">
-            <h2 className="tasks-title pending">Pending Tasks</h2>
-            <div className="task-list">
-              <div className="task-item">
-                <i className="fas fa-clock"></i>
-                <span>Complete project documentation</span>
-              </div>
+        <section className="projects-section">
+          <div className="section-header">
+            <div className="project-badge">
+              <span>{myProjects.length}</span>
+              <h2>Projects Progress</h2>
             </div>
           </div>
-
-          {/* Completed Tasks */}
-          <div className="tasks-column">
-            <h2 className="tasks-title completed">Completed Tasks</h2>
-            <div className="task-list">
-              <div className="task-item">
-                <i className="fas fa-check"></i>
-                <span>Initial project setup completed</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Project Progress */}
-        <section className="progress-section">
-          <h2>Project Progress</h2>
           {loading ? (
             <div className="loading">Loading projects...</div>
           ) : error ? (
             <div className="error">{error}</div>
           ) : (
-            <div className="progress-list">
+            <div className="projects-list">
               {myProjects.map(project => (
-                <div key={project.id} className="progress-item">
-                  <div className="progress-header">
+                <div key={project.id} className="project-item compact">
+                  <div className="project-header">
                     <div className="project-info">
-                      <span className="project-name">{project.name}</span>
-                      {isProjectAdmin(project.admin_id) && (
-                        <span className="admin-badge">Admin</span>
-                      )}
+                      <h3 className="project-name">
+                        {project.name}
+                        {project.admin_id === userProfile?.id && (
+                          <span className="admin-badge">Admin</span>
+                        )}
+                      </h3>
                     </div>
-                    <span className="progress-percentage">
+                    <div className="progress-value">
                       {Math.round(project.progress)}%
-                    </span>
+                    </div>
                   </div>
-                  <div className="progress-details">
+                  
+                  <div className="project-progress single-line">
                     <div className="progress-bar">
                       <div 
                         className="progress-fill"
                         style={{ width: `${project.progress}%` }}
                       ></div>
                     </div>
-                    {isProjectAdmin(project.admin_id) && (
-                      <div className="team-info">
-                        <span className="team-name">{project.team.name}</span>
-                        <span className="member-count">
-                          {project.team.members.length} members
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}
@@ -399,6 +307,55 @@ function Dashboard() {
           )}
         </section>
       </main>
+
+      <aside className="right-sidebar">
+        <div className="right-sidebar-section">
+          <h2>
+            <i className="fas fa-users"></i>
+            Colleagues
+          </h2>
+          {loading ? (
+            <div className="sidebar-loading">Loading colleagues...</div>
+          ) : error ? (
+            <div className="sidebar-error">{error}</div>
+          ) : (
+            <div className="colleagues-list">
+              {colleagues.map(team => (
+                <div key={team.team_id} className="team-section">
+                  <div className="team-header">
+                    <span className="team-name">{team.team_name}</span>
+                    <span className="member-count">{team.colleagues.length}</span>
+                  </div>
+                  <div className="team-members">
+                    {team.colleagues.map(colleague => (
+                      <div key={colleague.id} className="colleague-item">
+                        <div className="colleague-avatar">
+                          {colleague.username[0].toUpperCase()}
+                        </div>
+                        <div className="colleague-info">
+                          <span className="colleague-name">{colleague.username}</span>
+                          <span className="colleague-email">{colleague.email}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {colleagues.length === 0 && (
+                <div className="no-colleagues">No colleagues found</div>
+              )}
+            </div>
+          )}
+        </div>
+      </aside>
+
+      {isEditingProfile && (
+        <ProfileEdit
+          userProfile={userProfile}
+          onClose={() => setIsEditingProfile(false)}
+          onUpdate={handleProfileUpdate}
+        />
+      )}
     </div>
   );
 }

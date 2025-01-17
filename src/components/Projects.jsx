@@ -1,11 +1,8 @@
-// src/components/MyProjects.jsx
-
 import React, { useState, useEffect } from 'react';
-import { fetchMyProjects, getProjectTasks, addProject } from '../services/workbenchService.js';
-import { useNavigate } from 'react-router-dom';
-import './MyProjects.css';
+import { fetchMyProjects, getProjectTasks, addProject } from '../services/workbenchService';
+import './Projects.css';
 
-function MyProjects() {
+function Projects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -20,9 +17,6 @@ function MyProjects() {
     team: '',
     image_url: ''
   });
-  const [addError, setAddError] = useState('');
-  
-  const navigate = useNavigate();
 
   useEffect(() => {
     loadProjects();
@@ -41,6 +35,7 @@ function MyProjects() {
   };
 
   const handleViewTasks = async (project) => {
+    console.log('View tasks clicked for project:', project);
     setSelectedProject(project);
     setShowTasksModal(true);
     setTasksLoading(true);
@@ -49,6 +44,7 @@ function MyProjects() {
 
     try {
       const tasks = await getProjectTasks(project.id);
+      console.log('Received tasks:', tasks);
       setProjectTasks(tasks);
     } catch (err) {
       console.error('Error loading tasks:', err);
@@ -66,49 +62,18 @@ function MyProjects() {
   const handleAddProject = async (e) => {
     e.preventDefault();
     try {
-      setAddError('');
-      
-      // Validate inputs
-      if (!newProject.name.trim()) {
-        setAddError('Project name is required');
-        return;
-      }
-      if (!newProject.team.trim()) {
-        setAddError('Team ID is required');
-        return;
-      }
-
-      // Create project data object
-      const projectData = {
-        name: newProject.name.trim(),
-        team_id: newProject.team.trim(),
-        image_url: newProject.image_url.trim() || null
-      };
-
-      console.log('Creating project with data:', projectData);
-      const response = await addProject(projectData);
-      console.log('Project created:', response);
-
-      // Close modal and reset form
+      await addProject(newProject);
       setShowAddModal(false);
       setNewProject({ name: '', team: '', image_url: '' });
-      setAddError('');
-      
-      // Reload projects list
-      await loadProjects();
+      loadProjects(); // Reload projects after adding
     } catch (err) {
-      console.error('Error adding project:', err);
-      setAddError(
-        err.response?.data?.detail || 
-        err.response?.data?.message || 
-        err.message || 
-        'Failed to create project'
-      );
+      setError('Failed to add project');
+      console.error(err);
     }
   };
 
   const getStatusColor = (status) => {
-    switch (status?.toUpperCase()) {
+    switch (status.toUpperCase()) {
       case 'TODO':
         return '#e67700';
       case 'IN_PROGRESS':
@@ -128,18 +93,23 @@ function MyProjects() {
     });
   };
 
-  const handleTaskClick = (task) => {
-    navigate(`/tasks/${task.id}`);
-  };
+  console.log('Render state:', { 
+    showTasksModal, 
+    selectedProject, 
+    tasksLoading, 
+    tasksError, 
+    projectTasks 
+  });
 
   return (
     <div className="projects-page">
       <header className="projects-header">
         <h1>My Projects</h1>
         <button 
-          className="btn add-project-btn"
+          className="add-project-btn"
           onClick={() => setShowAddModal(true)}
         >
+          <i className="fas fa-plus"></i>
           New Project
         </button>
       </header>
@@ -164,10 +134,11 @@ function MyProjects() {
                   <h3>{project.name}</h3>
                   <div className="project-meta">
                     <span className="team-name">
-                      Team: {project.team?.name}
+                      <i className="fas fa-users"></i>
+                      {project.team.name}
                     </span>
                     <span className="progress">
-                      Progress: {Math.round(project.progress || 0)}%
+                      {Math.round(project.progress)}%
                     </span>
                   </div>
                 </div>
@@ -177,7 +148,7 @@ function MyProjects() {
                 <div className="progress-bar">
                   <div 
                     className="progress-fill"
-                    style={{ width: `${project.progress || 0}%` }}
+                    style={{ width: `${project.progress}%` }}
                   ></div>
                 </div>
               </div>
@@ -204,21 +175,14 @@ function MyProjects() {
       {/* Tasks Modal */}
       {showTasksModal && selectedProject && (
         <div className="modal-overlay" onClick={() => setShowTasksModal(false)}>
-          <div 
-            className="modal animated" 
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="tasks-modal-title"
-          >
+          <div className="modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2 id="tasks-modal-title">{selectedProject.name} - Tasks</h2>
+              <h2>{selectedProject.name} - Tasks</h2>
               <button 
                 className="close-btn"
                 onClick={() => setShowTasksModal(false)}
-                aria-label="Close Tasks Modal"
               >
-                &times;
+                <i className="fas fa-times"></i>
               </button>
             </div>
             <div className="modal-body">
@@ -231,12 +195,23 @@ function MyProjects() {
                   {Array.isArray(projectTasks) && projectTasks.map(task => (
                     <div key={task.id} className="task-item">
                       <div className="task-header">
-                        <h3 
-                          className="task-title clickable" 
-                          onClick={() => handleTaskClick(task)}
-                        >
-                          {task.title}
-                        </h3>
+                        <div className="task-title">
+                          <h3>{task.title}</h3>
+                          <div className="task-meta">
+                            <span>
+                              <i className="fas fa-calendar"></i>
+                              Due: {formatDate(task.due_date)}
+                            </span>
+                            <span>
+                              <i className="fas fa-flag"></i>
+                              Priority: {task.priority}
+                            </span>
+                            <span>
+                              <i className="fas fa-clock"></i>
+                              Created: {formatDate(task.created_at)}
+                            </span>
+                          </div>
+                        </div>
                         <span 
                           className="task-status"
                           style={{ backgroundColor: getStatusColor(task.status) }}
@@ -244,11 +219,37 @@ function MyProjects() {
                           {task.status}
                         </span>
                       </div>
+                      
                       <p className="task-description">{task.description}</p>
-                      <div className="task-meta">
-                        <span>Due: {formatDate(task.due_date)}</span>
-                        <span>Priority: {task.priority}</span>
-                        <span>Progress: {task.progress_percentage}%</span>
+                      
+                      <div className="task-progress">
+                        <div className="task-progress-header">
+                          <span>Progress</span>
+                          <span>{task.progress_percentage}%</span>
+                        </div>
+                        <div className="task-progress-bar">
+                          <div 
+                            className="task-progress-fill"
+                            style={{ width: `${task.progress_percentage}%` }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      <div className="task-team">
+                        <div className="task-team-header">
+                          <i className="fas fa-users"></i>
+                          {task.team.name}
+                        </div>
+                        <div className="task-team-members">
+                          {task.team.members.map(member => (
+                            <div key={member.id} className="team-member">
+                              <div className="member-avatar">
+                                {member.username[0].toUpperCase()}
+                              </div>
+                              <span>{member.username}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -265,35 +266,17 @@ function MyProjects() {
       {/* Add Project Modal */}
       {showAddModal && (
         <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
-          <div 
-            className="modal animated" 
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="add-project-modal-title"
-          >
+          <div className="modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2 id="add-project-modal-title">Create New Project</h2>
+              <h2>Create New Project</h2>
               <button 
                 className="close-btn"
-                onClick={() => {
-                  setShowAddModal(false);
-                  setNewProject({ name: '', team: '', image_url: '' });
-                  setAddError('');
-                }}
-                aria-label="Close Add Project Modal"
+                onClick={() => setShowAddModal(false)}
               >
-                &times;
+                <i className="fas fa-times"></i>
               </button>
             </div>
             <form onSubmit={handleAddProject} className="modal-body">
-              {addError && (
-                <div className="error-message">
-                  <i className="fas fa-exclamation-circle"></i>
-                  {addError}
-                </div>
-              )}
-              
               <div className="form-group">
                 <label htmlFor="name">Project Name</label>
                 <input
@@ -301,7 +284,6 @@ function MyProjects() {
                   id="name"
                   value={newProject.name}
                   onChange={e => setNewProject({...newProject, name: e.target.value})}
-                  placeholder="Enter project name"
                   required
                 />
               </div>
@@ -312,33 +294,27 @@ function MyProjects() {
                   id="team"
                   value={newProject.team}
                   onChange={e => setNewProject({...newProject, team: e.target.value})}
-                  placeholder="Enter team ID"
                   required
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="image_url">Image URL (Optional)</label>
+                <label htmlFor="image_url">Image URL (optional)</label>
                 <input
-                  type="text"
+                  type="url"
                   id="image_url"
                   value={newProject.image_url}
                   onChange={e => setNewProject({...newProject, image_url: e.target.value})}
-                  placeholder="Enter image URL (optional)"
                 />
               </div>
-              <div className="form-actions">
+              <div className="modal-footer">
                 <button 
                   type="button" 
-                  className="btn cancel-btn"
-                  onClick={() => {
-                    setShowAddModal(false);
-                    setNewProject({ name: '', team: '', image_url: '' });
-                    setAddError('');
-                  }}
+                  className="cancel-btn"
+                  onClick={() => setShowAddModal(false)}
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn submit-btn">
+                <button type="submit" className="submit-btn">
                   Create Project
                 </button>
               </div>
@@ -350,4 +326,4 @@ function MyProjects() {
   );
 }
 
-export default MyProjects;
+export default Projects; 

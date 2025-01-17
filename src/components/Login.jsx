@@ -1,32 +1,34 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { loginUser } from '../services/authService.js';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import './Login.css';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { loginUser } from '../services/authService';
+import '../styles/login.css';
 
 function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [credentials, setCredentials] = useState({
+    username: '',
+    password: ''
+  });
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-    
     try {
-      console.log('Attempting login with:', { username });
-      const data = await loginUser({ username, password });
-      console.log('Login response:', data);
+      setError('');
+      setLoading(true);
       
+      // Call the loginUser service function
+      const data = await loginUser(credentials);
+      
+      // If successful, update the auth context
       if (data.access && data.refresh && data.user) {
         login(data);
         navigate('/dashboard');
       } else {
-        setError('Invalid response from server');
+        throw new Error('Invalid response from server');
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -34,7 +36,7 @@ function Login() {
         err.response?.data?.detail || 
         err.response?.data?.error || 
         err.message || 
-        'Login failed. Please try again.'
+        'Failed to sign in. Please check your credentials.'
       );
     } finally {
       setLoading(false);
@@ -43,42 +45,92 @@ function Login() {
 
   return (
     <div className="login-container">
-      <form onSubmit={handleSubmit} className="login-form">
-        <h2>Login</h2>
-        {error && <p className="error">{error}</p>}
-        <div className="form-group">
-          <label>Username:</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            placeholder="Enter your username"
-            disabled={loading}
-          />
+      <div className="login-card">
+        <div className="login-header">
+          <div className="logo-container">
+            <div className="logo-circle">
+              <span>PM</span>
+            </div>
+          </div>
+          <h1>Welcome Back</h1>
+          <p>Sign in to continue to your workspace</p>
         </div>
-        <div className="form-group">
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            placeholder="Enter your password"
+
+        {error && (
+          <div className="error-message">
+            <i className="fas fa-exclamation-circle"></i>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <div className="input-icon-wrapper">
+              <i className="fas fa-user"></i>
+              <input
+                type="text"
+                placeholder="Username"
+                value={credentials.username}
+                onChange={(e) => setCredentials({
+                  ...credentials,
+                  username: e.target.value
+                })}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <div className="input-icon-wrapper">
+              <i className="fas fa-lock"></i>
+              <input
+                type="password"
+                placeholder="Password"
+                value={credentials.password}
+                onChange={(e) => setCredentials({
+                  ...credentials,
+                  password: e.target.value
+                })}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-options">
+            <label className="remember-me">
+              <input type="checkbox" />
+              <span>Remember me</span>
+            </label>
+            <Link to="/forgot-password" className="forgot-password">
+              Forgot Password?
+            </Link>
+          </div>
+
+          <button 
+            type="submit" 
+            className="login-button" 
             disabled={loading}
-          />
+          >
+            {loading ? (
+              <div className="loading-spinner">
+                <div className="spinner"></div>
+                <span>Signing in...</span>
+              </div>
+            ) : (
+              'Sign In'
+            )}
+          </button>
+        </form>
+
+        <div className="login-footer">
+          <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
         </div>
-        <button 
-          type="submit" 
-          className="login-button"
-          disabled={loading}
-        >
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-        <p>
-          Don't have an account? <Link to="/signup">Sign up here</Link>
-        </p>
-      </form>
+      </div>
+
+      {/* Background decoration */}
+      <div className="decoration-circle circle-1"></div>
+      <div className="decoration-circle circle-2"></div>
+      <div className="decoration-circle circle-3"></div>
     </div>
   );
 }
