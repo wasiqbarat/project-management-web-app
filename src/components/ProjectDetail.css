@@ -1,0 +1,22 @@
+.project-detail-container {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 20px;
+  }
+  
+  .project-detail-container h2 {
+    margin-bottom: 15px;
+  }
+  
+  .project-detail-container p {
+    margin-bottom: 10px;
+    color: #2c3e50;
+  }
+  
+  .error {
+    color: red;
+    text-align: center;
+  }
+  

@@ -1,0 +1,198 @@
+.my-projects {
+  padding: 2rem;
+}
+
+.projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.projects-header h1 {
+  font-size: 1.5rem;
+  color: #212529;
+  margin: 0;
+}
+
+.new-project-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: #228be6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.new-project-btn:hover {
+  background-color: #1c7ed6;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.project-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.project-header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.project-image {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.project-info h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  color: #212529;
+}
+
+.team-name {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: #868e96;
+}
+
+.project-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #495057;
+}
+
+.progress-bar {
+  height: 6px;
+  background-color: #e9ecef;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #228be6;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.project-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #495057;
+}
+
+.meta-item i {
+  color: #868e96;
+  width: 16px;
+}
+
+.project-team {
+  border-top: 1px solid #e9ecef;
+  padding-top: 1rem;
+}
+
+.project-team h4 {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  color: #495057;
+}
+
+.team-members {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.member-avatar {
+  width: 32px;
+  height: 32px;
+  background: #228be6;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.project-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  background: none;
+  color: #495057;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 3rem;
+  color: #868e96;
+}
+
+.error {
+  color: #e03131;
+}
+
+@media (max-width: 768px) {
+  .my-projects {
+    padding: 1rem;
+  }
+  
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+} 

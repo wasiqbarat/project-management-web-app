@@ -1,0 +1,17 @@
+/* Reuse styles from other workbench cards */
+.workbench-card {
+    flex: 1 1 100%;
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .workbench-card h3 {
+    margin-bottom: 10px;
+  }
+  
+  .workbench-card p {
+    font-size: 1.2em;
+  }
+  

@@ -1,0 +1,240 @@
+.workbench {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .workbench h1 {
+    margin-bottom: 20px;
+  }
+  
+  .workbench-sections {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .workbench-container {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .workbench-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .workbench-section h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  
+  /* Tasks Styling */
+  .tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+  }
+  
+  .task-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .task-card h3 {
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+  }
+  
+  .task-card p {
+    color: #6c757d;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    flex-grow: 1;
+  }
+  
+  .task-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+  }
+  
+  .deadline {
+    color: #6c757d;
+    font-size: 0.85rem;
+  }
+  
+  .status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  
+  .status.pending {
+    background-color: #ffd43b;
+    color: #664d03;
+  }
+  
+  .status.overdue {
+    background-color: #ff6b6b;
+    color: white;
+  }
+  
+  /* Stats Section */
+  .stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .stat-card {
+    background: linear-gradient(135deg, #4158D0 0%, #C850C0 100%);
+    border-radius: 8px;
+    padding: 1.5rem;
+    color: white;
+    text-align: center;
+  }
+  
+  .stat-card h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+  
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+  }
+  
+  /* Projects Status */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+  }
+  
+  .project-status-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .progress-container {
+    margin-top: 1rem;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    height: 8px;
+    position: relative;
+  }
+  
+  .progress-bar {
+    position: absolute;
+    height: 100%;
+    background: linear-gradient(90deg, #4158D0 0%, #C850C0 100%);
+    border-radius: 8px;
+    transition: width 0.3s ease;
+  }
+  
+  .progress-text {
+    position: absolute;
+    right: 0;
+    top: -1.5rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+  
+  /* Colleagues Section */
+  .colleagues-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+  
+  .colleague-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    transition: transform 0.2s;
+  }
+  
+  .colleague-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .colleague-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #4158D0 0%, #C850C0 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+  
+  .colleague-info {
+    min-width: 0;
+  }
+  
+  .colleague-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #2c3e50;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .workbench-container {
+      padding: 1rem;
+    }
+
+    .tasks-grid,
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .colleagues-grid {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+  }
+  
